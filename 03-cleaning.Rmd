@@ -1,1 +1,221 @@
 # Data transformation
+
+
+```{r}
+library(readxl)
+data_15_16 <-read_excel("./data/ Income and Earnings Summary Measures2015 and 2016.xls")
+data_17_18 <- read_excel("./data/Income Summary Measures 2017 and 2018.xlsx")
+data_19_20 <- read_excel("./data/Income Summary Measures 2019 and 2020.xlsx")
+
+fm_ern <- read_excel("./data/ Female_Male Earnings 1960 to 2020.xlsx")
+house_67_20 <- read_excel("./data/Households by Race 1967 to 2020.xlsx")
+```
+
+```{r}
+fm_ern <- fm_ern[7:69,]
+
+colnames(fm_ern)<-c("Year", 
+                    "total_workers_num_male","total_workers_num_male_we","total_median_earn_male","MOE1",
+                     "total_workers_num_female","total_workers_num_female_we","total_median_earn_female","MOE2",
+                     "ft_workers_num_male","ft_workers_num_male_we","ft_median_earn_male","MOE3",
+                     "ft_workers_num_female","ft_workers_num_female_we","ft_median_earn_female","MOE4",
+                    "F/M_earn_ratio"
+                    )
+
+
+fm_ern$Year <- substr(fm_ern$Year,1,4)
+write.csv(fm_ern,"./data_train/fm_ern_new.csv",row.names=FALSE,col.names=TRUE,sep=',')
+```
+
+
+
+
+```{r}
+house_67_20<-house_67_20[5:364,]
+# left inclued, right open
+colnames(house_67_20) <- c("Year","num_thous","total","under15_perc","15_25_perc","25_35_perc",
+                           "35_50_perc","50_75_perc","75_100_perc","100_150_perc","150_200_perc",
+                           "above200_perc", "median_income", "MOE1","mean_income","MOE2")
+
+# add a categorical column
+vec<-c()
+len<-nrow(house_67_20)
+for (i in 1:len){
+  if (is.na(house_67_20$num_thous[i])){
+    vec <- c(vec,i)
+  }
+}
+vec<-c(vec,len)
+dif_vec <- diff(vec)
+race_col <-c()
+n<-length(dif_vec)
+for (j in 1:n){
+  row<-vec[j]
+  race_col<- c(race_col,rep(t(house_67_20[row,1]),dif_vec[j]))
+}
+house_67_20$race_cate <-c(race_col,"HISPANIC (ANY RACE) 28")
+house_67_20 <- house_67_20[-vec[1:length(vec)-1],]
+house_67_20$Year <- substr(house_67_20$Year,1,4)
+write.csv(house_67_20,"./data_train/house_67_20_new.csv",row.names=FALSE,col.names=TRUE,sep=',')
+```
+
+
+```{r}
+data_15_household <- data_15_16[9:15,1:3]
+colnames(data_15_household) <- c("Type of Households","num","median_income")
+data_15_household$Year <- rep(2015,7)
+
+data_16_household <- data_15_16[9:15,c(1,5:6)]
+colnames(data_16_household) <- c("Type of Households","num","median_income")
+data_16_household$Year <- rep(2016,7)
+
+
+data_17_household <- data_17_18[9:15,1:3] 
+colnames(data_17_household) <- c("Type of Households","num","median_income")
+data_17_household$Year <- rep(2017,7)
+
+data_18_household <- data_17_18[9:15,c(1,5:6)]
+colnames(data_18_household) <- c("Type of Households","num","median_income")
+data_18_household$Year <- rep(2018,7)
+
+
+data_19_household <- data_19_20[9:15,1:3]
+colnames(data_19_household) <- c("Type of Households","num","median_income")
+data_19_household$Year <- rep(2019,7)
+
+data_20_household <- data_19_20[9:15,c(1,5:6)]
+colnames(data_20_household) <- c("Type of Households","num","median_income")
+data_20_household$Year <- rep(2020,7)
+ 
+data_15_20_household <- rbind(data_15_household,data_16_household,data_17_household,data_18_household,data_19_household,data_20_household)
+
+write.csv(data_15_20_household,"./data_train/data_15_20_household.csv",row.names=FALSE,col.names=TRUE,sep=',')
+```
+
+```{r}
+#race
+data_15_race <- data_15_16[17:21,1:3]
+colnames(data_15_race)<- c("Race","num","median_income")
+data_15_race$Year <- rep(2015,5)
+
+
+data_16_race <- data_15_16[17:21,c(1,5:6)]
+colnames(data_16_race) <- c("Race","num","median_income")
+data_16_race$Year <- rep(2016,5)
+
+
+data_17_race <- data_17_18[17:21,1:3] 
+colnames(data_17_race) <- c("Race","num","median_income")
+data_17_race$Year <- rep(2017,5)
+
+data_18_race <- data_17_18[17:21,c(1,5:6)]
+colnames(data_18_race) <- c("Race","num","median_income")
+data_18_race$Year <- rep(2018,5)
+
+
+data_19_race <- data_19_20[17:21,1:3]
+colnames(data_19_race) <- c("Race","num","median_income")
+data_19_race$Year <- rep(2019,5)
+
+data_20_race <- data_19_20[17:21,c(1,5:6)]
+colnames(data_20_race) <- c("Race","num","median_income")
+data_20_race$Year <- rep(2020,5)
+
+data_15_20_race <- rbind(data_15_race,data_16_race,data_17_race,data_18_race,data_19_race,data_20_race)
+write.csv(data_15_20_race,"./data_train/data_15_20_race.csv",row.names=FALSE,col.names=TRUE,sep=',')
+```
+
+
+```{r}
+#age
+data_15_age <- data_15_16[23:29,1:3]
+colnames(data_15_age)<- c("Age","num","median_income")
+data_15_age$Year <- rep(2015,7)
+
+
+data_16_age <- data_15_16[23:29,c(1,5:6)]
+colnames(data_16_age) <- c("Age","num","median_income")
+data_16_age$Year <- rep(2016,7)
+
+
+data_17_age <- data_17_18[23:29,1:3] 
+colnames(data_17_age) <- c("Age","num","median_income")
+data_17_age$Year <- rep(2017,7)
+
+data_18_age <- data_17_18[23:29,c(1,5:6)]
+colnames(data_18_age) <- c("Age","num","median_income")
+data_18_age$Year <- rep(2018,7)
+
+
+
+data_19_age <- data_19_20[23:29,1:3]
+colnames(data_19_age) <- c("Age","num","median_income")
+data_19_age$Year <- rep(2019,7)
+
+data_20_age <- data_19_20[23:29,c(1,5:6)]
+colnames(data_20_age) <- c("Age","num","median_income")
+data_20_age$Year <- rep(2020,7)
+
+data_15_20_age <- rbind(data_15_age,data_16_age,data_17_age,data_18_age,data_19_age,data_20_age)
+write.csv(data_20_age,"./data_train/data_20_age.csv",row.names=FALSE,col.names=TRUE,sep=',')
+```
+
+
+```{r}
+#region
+data_15_region <- data_15_16[36:39,1:3]
+colnames(data_15_region)<- c("Region","num","median_income")
+data_15_region$Year <- rep(2015,4)
+
+
+data_16_region <- data_15_16[36:39,c(1,5:6)]
+colnames(data_16_region) <- c("Region","num","median_income")
+data_16_region$Year <- rep(2016,4)
+
+
+data_17_region <- data_17_18[36:39,1:3] 
+colnames(data_17_region) <- c("Region","num","median_income")
+data_17_region$Year <- rep(2017,4)
+
+data_18_region <- data_17_18[36:39,c(1,5:6)]
+colnames(data_18_region) <- c("Region","num","median_income")
+data_18_region$Year <- rep(2018,4)
+
+
+
+data_19_region <- data_19_20[36:39,1:3]
+colnames(data_19_region) <- c("Region","num","median_income")
+data_19_region$Year <- rep(2019,4)
+
+data_20_region <- data_19_20[36:39,c(1,5:6)]
+colnames(data_20_region) <- c("Region","num","median_income")
+data_20_region$Year <- rep(2020,4)
+
+data_15_20_region <- rbind(data_15_region,data_16_region,data_17_region,data_18_region,data_19_region,data_20_region)
+write.csv(data_15_20_region,"./data_train/data_15_20_region.csv",row.names=FALSE,col.names=TRUE,sep=',')
+```
+
+
+```{r}
+#education
+data_19_edu <- data_19_20[46:50,1:3]
+colnames(data_19_edu) <- c("Education","num","median_income")
+data_19_edu$Year <- rep(2019,5)
+
+data_20_edu <- data_19_20[46:50,c(1,5:6)]
+colnames(data_20_edu) <- c("Education","num","median_income")
+data_20_edu$Year <- rep(2020,5)
+
+data_19_20_edu <- rbind(data_19_edu,data_20_edu)
+write.csv(data_19_20_edu,"./data_train/data_19_20_edu.csv",row.names=FALSE,col.names=TRUE,sep=',')
+```
+
+
+
+```{r}
+d1 <- read.csv("./data_train/fm_ern_new.csv")
+d2 <- read.csv("./data_train/house_67_20_new.csv")
+head(d1)
+head(d2)
+```
+
