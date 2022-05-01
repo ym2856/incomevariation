@@ -1,6 +1,6 @@
 --- 
 title: "Income Variation"
-author: "Xirui Guo and Yue Ma"
+author: "Xirui Guo and Yue Ma ym2856"
 date: "`r Sys.Date()`"
 site: bookdown::bookdown_site
 ---
