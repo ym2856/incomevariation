@@ -106,18 +106,7 @@ ggarrange(bar1,bar2,bar3,bar4,bar5,bar6,bar7,bar8,nrow=4,ncol=3)
 
   
 ```
-```{r}
 
-ggplot(aes(y = freq, axis1 = Q2, axis2 = Q1, axis3 = Q3, axis4 = Q4)) +
-  geom_alluvium(aes(fill = Q4), width = 1/12) +
-  geom_stratum(width = 1/12, fill = "black", color = "grey") +
-  geom_label(stat = "stratum", label.strata = TRUE) +
-  scale_x_discrete(limits = c("Gender", "Age", "Country", "Degree"), expand = c(.11, .01)) +
-  labs(x = "", y = "") +
-  theme_minimal() +
-  theme(legend.position="none") 
-
-```
 
 ```{r}
 
